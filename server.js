@@ -10,7 +10,7 @@ const app = express();
 app.use(
   cors({
     origin: ["https://comfora-site-frontend.vercel.app", "*"], // ✅ Allow your frontend domain
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
