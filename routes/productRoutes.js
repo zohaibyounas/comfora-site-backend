@@ -69,8 +69,16 @@ router.post(
 
 // ✅ Get All Products
 router.get("/", async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
+  const { category } = req.query;
+
+  try {
+    const filter = category ? { category } : {};
+    const products = await Product.find(filter);
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 export default router;
