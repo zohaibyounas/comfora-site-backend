@@ -9,9 +9,14 @@ dotenv.config();
 const app = express();
 app.use(
   cors({
-    origin: ["https://comfora-site-frontend.vercel.app", "*"], // ✅ Allow your frontend domain
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: ["https://comfora-site-frontend.vercel.app"], // Your frontend domain
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "email", // ✅ Allow custom header
+      "password", // ✅ Allow custom header
+    ],
   })
 );
 app.use(express.json());
