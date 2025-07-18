@@ -19,8 +19,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const ADMIN_EMAIL = "zohaiby737@gmail.com";
-const ADMIN_PASSWORD = "admin@123";
+const ADMIN_EMAIL = "admin@example.com";
+const ADMIN_PASSWORD = "password123";
 
 const verifyAdmin = (req, res, next) => {
   const { email, password } = req.headers;
