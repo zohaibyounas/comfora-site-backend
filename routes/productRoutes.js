@@ -31,7 +31,7 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-// ✅ Add Product Route with Stock Handling
+// ✅ Add Product Route (with stock + subcategory)
 router.post(
   "/add",
   verifyAdmin,
@@ -44,6 +44,7 @@ router.post(
         comparePrice,
         stock,
         category,
+        subcategory,
         sizes,
         colors,
         description,
@@ -53,8 +54,9 @@ router.post(
         name,
         price: Number(price),
         comparePrice: Number(comparePrice),
-        stock: Number(stock) || 0, // ✅ Ensure saving as number and fallback to 0
+        stock: Number(stock) || 0,
         category,
+        subcategory,
         description,
         sizes: sizes ? sizes.split(",") : [],
         colors: colors ? colors.split(",") : [],
@@ -69,12 +71,15 @@ router.post(
   }
 );
 
-// ✅ Fetch Products
+// ✅ Fetch Products (by category or subcategory)
 router.get("/", async (req, res) => {
-  const { category } = req.query;
+  const { category, subcategory } = req.query;
 
   try {
-    const filter = category ? { category } : {};
+    const filter = {};
+    if (category) filter.category = category;
+    if (subcategory) filter.subcategory = subcategory;
+
     const products = await Product.find(filter);
     res.json(products);
   } catch (error) {
