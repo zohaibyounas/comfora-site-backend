@@ -11,8 +11,8 @@ app.use(
   cors({
     origin: [
       "https://comfora-site-frontend.vercel.app",
-      "http://localhost:5173/",
-      "http://localhost:3000/",
+      "http://localhost:5173",
+      "http://localhost:3000",
     ], // Your frontend domain
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
