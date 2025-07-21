@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-  name: String,
-  price: Number,
-  comparePrice: Number,
-  images: [String], // ✅ multiple images stored as array
+  name: { type: String, required: true },
+  price: { type: Number, required: true },
+  comparePrice: { type: Number, required: true },
+  stock: {
+    type: Number,
+    default: 0, // ✅ Default stock to 0 if not provided
+  },
+  images: [String],
   discount: Number,
   category: String,
   description: String,

@@ -31,17 +31,18 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-// ✅ Add Product (with multiple images)
+// ✅ Add Product Route with Stock Handling
 router.post(
   "/add",
   verifyAdmin,
-  upload.array("images", 5), // allow up to 5 images
+  upload.array("images", 5),
   async (req, res) => {
     try {
       const {
         name,
         price,
         comparePrice,
+        stock,
         category,
         sizes,
         colors,
@@ -50,13 +51,14 @@ router.post(
 
       const product = new Product({
         name,
-        price,
-        comparePrice,
+        price: Number(price),
+        comparePrice: Number(comparePrice),
+        stock: Number(stock) || 0, // ✅ Ensure saving as number and fallback to 0
         category,
         description,
-        sizes: sizes.split(","),
-        colors: colors.split(","),
-        images: req.files.map((file) => file.filename), // ✅ Save multiple images
+        sizes: sizes ? sizes.split(",") : [],
+        colors: colors ? colors.split(",") : [],
+        images: req.files.map((file) => file.filename),
       });
 
       await product.save();
@@ -67,14 +69,13 @@ router.post(
   }
 );
 
-// ✅ Get All Products
+// ✅ Fetch Products
 router.get("/", async (req, res) => {
   const { category } = req.query;
 
   try {
     const filter = category ? { category } : {};
     const products = await Product.find(filter);
-
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
