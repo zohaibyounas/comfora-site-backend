@@ -13,6 +13,7 @@ app.use(
       "https://comfora-site-frontend.vercel.app",
       "http://localhost:5173",
       "http://localhost:3000",
+      "https://comforo.vercel.app",
     ], // Your frontend domain
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
