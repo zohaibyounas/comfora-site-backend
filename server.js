@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import cartRoutes from "./routes/cartRoute.js";
 
 // Routes
 import productRoutes from "./routes/productRoutes.js";
@@ -43,7 +44,9 @@ mongoose
 // Routes
 app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/orders", orderRoutes); // ✅ Your new route for checkout functionality
+app.use("/api/orders", orderRoutes); // ✅ Your new route for checkout
+// functionality
+app.use("/api/cart", cartRoutes);
 
 // Server Start
 const PORT = process.env.PORT || 5000;
