@@ -7,11 +7,12 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
   images: [String],
   discount: Number,
-  category: String, // e.g. "bras"
-  subcategory: String, // e.g. "lace", "cotton"
+  category: String,
+  subcategory: String,
   description: String,
   sizes: [String],
   colors: [String],
+  shippingPrice: { type: Number, default: 0 }, // ✅ New Field
 });
 
 const Product = mongoose.model("Product", productSchema);

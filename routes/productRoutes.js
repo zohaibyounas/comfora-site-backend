@@ -31,7 +31,6 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-// ✅ Add Product Route (with stock + subcategory)
 router.post(
   "/add",
   verifyAdmin,
@@ -48,6 +47,7 @@ router.post(
         sizes,
         colors,
         description,
+        shippingPrice, // ✅ new
       } = req.body;
 
       const product = new Product({
@@ -58,6 +58,7 @@ router.post(
         category,
         subcategory,
         description,
+        shippingPrice: Number(shippingPrice) || 0, // ✅ new
         sizes: sizes ? sizes.split(",") : [],
         colors: colors ? colors.split(",") : [],
         images: req.files.map((file) => file.filename),
@@ -71,10 +72,8 @@ router.post(
   }
 );
 
-// ✅ Fetch Products (by category or subcategory)
 router.get("/", async (req, res) => {
   const { category, subcategory } = req.query;
-
   try {
     const filter = {};
     if (category) filter.category = category;
