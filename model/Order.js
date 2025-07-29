@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-  name: String,
+  firstName: String,
+  lastName: String,
   email: String,
   address: String,
+  apartment: String,
+  city: String,
+  zipCode: String,
+  phone: String,
   paymentMethod: { type: String, enum: ["bank", "cod"] },
   paymentImage: String,
   status: { type: String, default: "pending" },

@@ -23,19 +23,34 @@ const upload = multer({ storage });
 // POST /checkout
 router.post("/checkout", upload.single("paymentImage"), async (req, res) => {
   try {
-    const { name, email, address, paymentMethod } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      address,
+      apartment,
+      city,
+      zipCode,
+      phone,
+      paymentMethod,
+    } = req.body;
+
     const paymentImage =
       paymentMethod === "bank" && req.file ? req.file.filename : null;
 
     const order = await Order.create({
-      name,
+      firstName,
+      lastName,
       email,
       address,
+      apartment,
+      city,
+      zipCode,
+      phone,
       paymentMethod,
       paymentImage,
     });
 
-    // Send email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -45,17 +60,21 @@ router.post("/checkout", upload.single("paymentImage"), async (req, res) => {
     });
 
     const mailOptions = {
-      from: "zohaiby737@gmail.com",
+      from: "zohaiby737@gmail",
       to: `${email}, zohaiby737@gmail.com`,
       subject: "Order Confirmation",
-      html: `<p>Hi ${name},</p>
-             <p>Your order has been placed successfully.</p>
-             <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-             ${
-               paymentImage
-                 ? `<p><strong>Payment Proof:</strong> ${paymentImage}</p>`
-                 : ""
-             }`,
+      html: `
+        <p>Hi ${firstName} ${lastName},</p>
+        <p>Your order has been placed successfully.</p>
+        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+        <p><strong>Shipping Address:</strong> ${address}, ${apartment}, ${city}, ${zipCode}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        ${
+          paymentImage
+            ? `<p><strong>Payment Proof:</strong> ${paymentImage}</p>`
+            : ""
+        }
+      `,
     };
 
     await transporter.sendMail(mailOptions);
