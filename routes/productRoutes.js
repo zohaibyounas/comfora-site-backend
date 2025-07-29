@@ -34,7 +34,7 @@ const verifyAdmin = (req, res, next) => {
 router.post(
   "/add",
   verifyAdmin,
-  upload.array("images", 5),
+  upload.array("images", 100),
   async (req, res) => {
     try {
       const {
