@@ -28,6 +28,7 @@ router.post("/add", async (req, res) => {
       selectedSize,
       selectedColor,
       quantity,
+      image: product.images?.[0] || "", // ✅ use first image if available
     };
 
     if (cart) {
