@@ -31,6 +31,7 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
+// Add Product
 router.post(
   "/add",
   verifyAdmin,
@@ -47,7 +48,7 @@ router.post(
         sizes,
         colors,
         description,
-        shippingPrice, // ✅ new
+        shippingPrice,
       } = req.body;
 
       const product = new Product({
@@ -58,7 +59,7 @@ router.post(
         category,
         subcategory,
         description,
-        shippingPrice: Number(shippingPrice) || 0, // ✅ new
+        shippingPrice: Number(shippingPrice) || 0,
         sizes: sizes ? sizes.split(",") : [],
         colors: colors ? colors.split(",") : [],
         images: req.files.map((file) => file.filename),
@@ -72,6 +73,57 @@ router.post(
   }
 );
 
+// Edit Product
+router.put(
+  "/edit/:id",
+  verifyAdmin,
+  upload.array("images", 100),
+  async (req, res) => {
+    try {
+      const {
+        name,
+        price,
+        comparePrice,
+        stock,
+        category,
+        subcategory,
+        sizes,
+        colors,
+        description,
+        shippingPrice,
+      } = req.body;
+
+      const updateData = {
+        name,
+        price: Number(price),
+        comparePrice: Number(comparePrice),
+        stock: Number(stock) || 0,
+        category,
+        subcategory,
+        description,
+        shippingPrice: Number(shippingPrice) || 0,
+        sizes: sizes ? sizes.split(",") : [],
+        colors: colors ? colors.split(",") : [],
+      };
+
+      if (req.files.length > 0) {
+        updateData.images = req.files.map((file) => file.filename);
+      }
+
+      const updated = await Product.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true }
+      );
+
+      res.json({ message: "Product Updated", product: updated });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// Get Products
 router.get("/", async (req, res) => {
   const { category, subcategory } = req.query;
   try {
