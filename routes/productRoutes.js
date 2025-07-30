@@ -1,23 +1,29 @@
 import express from "express";
 import multer from "multer";
 import Product from "../model/Product.js";
-import path from "path";
-import { fileURLToPath } from "url";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
-const router = express.Router();
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: "dion8xgh4",
+  api_key: "135699971577598",
+  api_secret: "B4aq8GXLFAh25hjI6Zd58OAL6UM",
+});
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../uploads"),
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
+// Multer storage using Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "products",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    transformation: [{ width: 800, height: 800, crop: "limit" }],
   },
 });
 
 const upload = multer({ storage });
+
+const router = express.Router();
 
 const ADMIN_EMAIL = "admin@example.com";
 const ADMIN_PASSWORD = "password123";
@@ -62,7 +68,7 @@ router.post(
         shippingPrice: Number(shippingPrice) || 0,
         sizes: sizes ? sizes.split(",") : [],
         colors: colors ? colors.split(",") : [],
-        images: req.files.map((file) => file.filename),
+        images: req.files.map((file) => file.path), // <-- Use Cloudinary URLs
       });
 
       await product.save();
@@ -107,7 +113,7 @@ router.put(
       };
 
       if (req.files.length > 0) {
-        updateData.images = req.files.map((file) => file.filename);
+        updateData.images = req.files.map((file) => file.path); // <-- Use Cloudinary URLs
       }
 
       const updated = await Product.findByIdAndUpdate(
@@ -135,6 +141,35 @@ router.get("/", async (req, res) => {
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete Product
+router.delete("/delete/:id", verifyAdmin, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Delete images from Cloudinary
+    const imagePublicIds = product.images.map((url) => {
+      const parts = url.split("/");
+      const fileName = parts[parts.length - 1];
+      const publicId = "products/" + fileName.split(".")[0]; // assumes folder is 'products'
+      return publicId;
+    });
+
+    for (const publicId of imagePublicIds) {
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    // Remove product from DB
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ message: "Product deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
