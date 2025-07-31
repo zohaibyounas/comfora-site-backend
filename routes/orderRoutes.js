@@ -72,10 +72,18 @@ router.post("/checkout", upload.single("paymentImage"), async (req, res) => {
         <p><strong>Phone:</strong> ${phone}</p>
         ${
           paymentImage
-            ? `<p><strong>Payment Proof:</strong> ${paymentImage}</p>`
+            ? `<p><strong>Payment Proof Attached Below.</strong></p>`
             : ""
         }
       `,
+      attachments: paymentImage
+        ? [
+            {
+              filename: paymentImage,
+              path: path.join(__dirname, "../uploads", paymentImage),
+            },
+          ]
+        : [],
     };
 
     // ✅ Email to admin
@@ -89,7 +97,20 @@ router.post("/checkout", upload.single("paymentImage"), async (req, res) => {
         <p><strong>Phone:</strong> ${phone}</p>
         <p><strong>Address:</strong> ${address}, ${apartment}, ${city}, ${zipCode}</p>
         <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+        ${
+          paymentImage
+            ? `<p><strong>Payment Proof Attached Below.</strong></p>`
+            : ""
+        }
       `,
+      attachments: paymentImage
+        ? [
+            {
+              filename: paymentImage,
+              path: path.join(__dirname, "../uploads", paymentImage),
+            },
+          ]
+        : [],
     };
 
     await transporter.sendMail(mailOptionsCustomer);
