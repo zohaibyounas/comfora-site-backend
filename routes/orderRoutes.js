@@ -54,14 +54,15 @@ router.post("/checkout", upload.single("paymentImage"), async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "zohaiby737@gmail.com",
-        pass: "djcm wnmc knjc lfld",
+        user: "comforapk@gmail.com",
+        pass: "ycsx rphp igsu hess", // ✅ Suggest to move to .env for security
       },
     });
 
-    const mailOptions = {
-      from: "zohaiby737@gmail",
-      to: `${email}, zohaiby737@gmail.com`,
+    // ✅ Email to customer
+    const mailOptionsCustomer = {
+      from: "comforapk@gmail.com",
+      to: `${email}`,
       subject: "Order Confirmation",
       html: `
         <p>Hi ${firstName} ${lastName},</p>
@@ -77,7 +78,22 @@ router.post("/checkout", upload.single("paymentImage"), async (req, res) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    // ✅ Email to admin
+    const mailOptionsAdmin = {
+      from: "comforapk@gmail.com",
+      to: "comforapk@gmail.com",
+      subject: "Comfora - New Order Received",
+      html: `
+        <p>You have received a new order from ${firstName} ${lastName}.</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Address:</strong> ${address}, ${apartment}, ${city}, ${zipCode}</p>
+        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptionsCustomer);
+    await transporter.sendMail(mailOptionsAdmin);
 
     res.status(200).json({ message: "Order placed", order });
   } catch (err) {
@@ -103,18 +119,20 @@ router.put("/order/:id/status", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "zohaiby737@gmail.com",
-        pass: "djcm wnmc knjc lfld",
+        user: "comforapk@gmail.com",
+        pass: "ycsx rphp igsu hess",
       },
     });
 
     const mailOptions = {
-      from: "zohaiby737@gmail.com",
-      to: `${order.email}, zohaiby737@gmail.com`,
+      from: "comforapk@gmail.com",
+      to: `${order.email}`,
       subject: "Order Status Update",
-      html: `<p>Hi ${order.name},</p>
-             <p>Your order status has been updated to <strong>${status}</strong>.</p>
-             <p>Thank you for shopping with us!</p>`,
+      html: `
+        <p>Hi ${order.firstName} ${order.lastName},</p>
+        <p>Your order status has been updated to <strong>${status}</strong>.</p>
+        <p>Thank you for shopping with us!</p>
+      `,
     };
 
     await transporter.sendMail(mailOptions);
